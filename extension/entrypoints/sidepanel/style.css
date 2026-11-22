@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Both shared with the page launcher. Tokens are class-scoped there; the
+ * `upwin-theme` class on <html> is what applies them here. */
+@import "../../features/theme/tailwind-theme.css";
+@import "../../features/theme/tokens.css";
+@import "../../features/theme/shimmer.css";
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --background: oklch(0.145 0 0);
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  /* Keep html's overflow `visible` so body's overflow propagates to the
+   * viewport. Radix popovers lock scroll with `body { overflow: hidden }`; if
+   * html clipped too, body would become its own scroll container and the
+   * sticky header would bind to it and scroll off-screen. */
+  html {
+    width: 100%;
+    max-width: 100vw;
+    background: var(--background);
+  }
+
+  body,
+  #root {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: clip;
+  }
+
+  body {
+    min-width: 0;
+    min-height: 100dvh;
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button,
+  textarea {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 20%, transparent);
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--muted-foreground) 38%, transparent);
+    background-clip: padding-box;
+  }
+}
+
+@media (max-width: 280px) {
+  [data-slot="dock"] {
+    gap: 2px;
+    padding: 4px;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [data-slot="dock"] {
+    background: var(--background);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

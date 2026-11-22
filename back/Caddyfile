@@ -1,0 +1,10 @@
+# HTTPS for an online install: Caddy gets and renews the certificate for
+# API_DOMAIN on its own. Point the domain's DNS A record at this server first.
+{$API_DOMAIN} {
+	encode zstd gzip
+	# Recording parts go straight to the bucket; only JSON and CV uploads pass here.
+	request_body {
+		max_size 12MB
+	}
+	reverse_proxy api:3002
+}

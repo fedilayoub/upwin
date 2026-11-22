@@ -1,0 +1,330 @@
+/* Local rules for the SPEC-01 hardware skin. skin.css is generated; what this
+   app changes or adds lives here, and is loaded after it.
+
+   The registry's skin is one finish, a neutral gray plate with white keys,
+   and has no dark one. Here the plate takes the dashboard accent's hue: sage
+   in the light theme, forest in the dark. Anything placed inside a <Hardware>
+   root takes its colors from the variables below, never from the app's theme
+   tokens, which are picked for the page's background, not the plate's. */
+
+[data-skin="hardware"] {
+  /* next/font serves IBM Plex Mono under a generated family name, exposed as
+     --font-plex-mono by lib/hardware/font.ts. */
+  --sans: var(--font-plex-mono, "IBM Plex Mono"), ui-monospace, Menlo, monospace;
+
+  /* The plate and what is printed on it. Contrast on the plate: ink 14:1,
+     help 6.9:1, legend 5.1:1. */
+  --paper: oklch(0.948 0.032 150);
+  --edge: oklch(0.88 0.04 150);
+  --ink: oklch(0.24 0.035 155);
+  --help: oklch(0.43 0.04 155);
+  --legend: oklch(0.5 0.035 155);
+  --dim: var(--legend);
+  --error: #a3231c;
+  --tick: oklch(0.55 0.03 155);
+  --tick-soft: oklch(0.72 0.03 155);
+
+  /* Recesses: the segmented well, the switch's slot, and the lit edge under
+     them where the plate catches the light. */
+  --well: oklch(0.9 0.035 150);
+  --slot-from: oklch(0.2 0.02 155);
+  --slot-to: oklch(0.27 0.02 155);
+  --groove: rgb(0 0 0 / 0.12);
+  --lip: rgb(255 255 255 / 0.8);
+  --engraved: 0 1px 0 rgb(255 255 255 / 0.7);
+  --led-off: oklch(0.82 0.03 150);
+
+  /* The key color: lit lamps, the dial's pointer and its chosen stop. The
+     skin derives its marks from these three; they stay at or under 0.68
+     lightness, above which the skin prints marks near-black for a white
+     plate. */
+  --theme-l: 0.5;
+  --theme-c: 0.14;
+  --theme-h: 155;
+  --chip: var(--key-cap);
+  --chip-ink: var(--on-accent);
+
+  box-shadow:
+    inset 0 0 0 1px var(--edge),
+    inset 0 1px 0 var(--lip);
+}
+
+/* Forest. Contrast on the plate: ink 13:1, help 8.2:1, legend 6.2:1. The
+   keys themselves (lever, knob, segmented key) stay light, as cream caps on a
+   dark plate, a touch dimmer so they do not glare. */
+.dark [data-skin="hardware"] {
+  --paper: oklch(0.265 0.04 155);
+  --edge: rgb(255 255 255 / 0.08);
+  --ink: oklch(0.95 0.02 150);
+  --help: oklch(0.8 0.03 150);
+  --legend: oklch(0.72 0.03 150);
+  --error: oklch(0.78 0.14 25);
+  --tick: oklch(0.6 0.03 150);
+  --tick-soft: oklch(0.45 0.03 150);
+
+  --well: oklch(0.2 0.035 155);
+  --slot-from: oklch(0.13 0.02 155);
+  --slot-to: oklch(0.17 0.02 155);
+  --groove: rgb(255 255 255 / 0.14);
+  --lip: rgb(255 255 255 / 0.07);
+  --engraved: 0 1px 0 rgb(0 0 0 / 0.45);
+  --led-off: oklch(0.38 0.03 155);
+  /* Cast shadows are tuned for a light plate; on a dark one they need more
+     weight to show at all. */
+  --shadow-k: 2;
+
+  --theme-l: 0.68;
+  --theme-c: 0.16;
+  --theme-h: 150;
+  /* White on the key color is 4.5:1 here at best, on 9.5px type. Dark ink on
+     the full key color is 6.9:1. */
+  --chip: var(--theme);
+  --chip-ink: oklch(0.18 0.03 155);
+}
+
+.dark [data-skin="hardware"] :is([data-kit="slide-switch-lever"], [data-kit="mode-dial-knob"], [data-kit="segmented-indicator"]) {
+  filter: brightness(0.9);
+}
+
+/* Where the skin paints a part in a fixed gray, repaint it from the plate's
+   variables. Each selector matches the specificity of the rule it replaces,
+   so the skin's own hover, checked and focus rules still win over it. */
+[data-skin="hardware"] [data-kit="slide-switch"]:not(#_)::before {
+  background: linear-gradient(90deg, var(--slot-from), var(--slot-to));
+  box-shadow:
+    inset 0 1px 2px rgb(0 0 0 / 0.5),
+    0 0 0 1px rgb(0 0 0 / 0.06),
+    0 1px 0 1px var(--lip);
+}
+
+[data-skin="hardware"] [data-kit="slide-switch-stop"]:not(#_):not(#_) {
+  color: var(--legend);
+}
+
+[data-skin="hardware"] [data-kit="slide-switch-stop"]:not(#_):not(#_)::before {
+  background: var(--tick-soft);
+}
+
+[data-skin="hardware"] [data-kit="mode-dial-scale"]:not(#_) {
+  background: repeating-conic-gradient(
+    from calc(var(--sweep) / -2 - 0.15deg),
+    var(--tick) 0deg 0.3deg,
+    transparent 0.55deg 5.75deg,
+    var(--tick) 6deg
+  );
+}
+
+[data-skin="hardware"] [data-kit="mode-stop-label"] {
+  color: var(--legend);
+}
+
+[data-skin="hardware"] [data-kit="mode-stop"]:is([data-checked], [aria-checked="true"]) [data-kit="mode-stop-label"] {
+  color: var(--chip-ink);
+  background: var(--chip);
+  box-shadow: 0 1px 0 var(--lip);
+}
+
+[data-skin="hardware"] [data-kit="segmented"]:not(#_)::before {
+  background: var(--well);
+}
+
+[data-skin="hardware"] [data-kit="segment"]:not(:first-of-type):not(#_)::after {
+  background: var(--groove);
+  box-shadow: 1px 0 0 var(--lip);
+}
+
+/* The app's <Label>, printed as the skin prints a control's legend. The skin
+   sets its legends at 8 to 10px; they are a size up here, where they have to
+   be read rather than recognized.
+
+   A block rather than the app's flex row, so it follows its field's
+   `text-align`. A class on the field could not center it otherwise: each
+   field is a size container (below), so a container variant on the label
+   would measure the field, not the panel. */
+[data-skin="hardware"] [data-slot="label"] {
+  display: block;
+  font: var(--label);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+[data-skin="hardware"] [data-hardware="help"] {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--help);
+  text-shadow: none;
+}
+
+[data-skin="hardware"] [data-hardware="error"] {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--error);
+  text-shadow: none;
+}
+
+/* Sizes. The registry draws its controls for a catalog of small devices,
+   with legends at 8 to 8.5px. On a settings page those legends are the
+   options themselves and have to be read, so each control is a size up. */
+
+/* Controls sit at the start of their field, under its label, rather than
+   centered in the column as on the registry's catalog page. */
+[data-skin="hardware"] [data-kit="slide-switch"]:not(#_) {
+  --col: 92px;
+  justify-self: start;
+}
+
+[data-skin="hardware"] [data-kit="slide-switch"] > [data-kit="slide-switch-stop"]:not(#_):not(#_):not(#_) {
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+}
+
+/* Each field is a size container, so a control can fit the column it is in
+   rather than the viewport: the panel is one column on a phone and two beside
+   a sidebar, and neither width follows from the screen's. */
+[data-skin="hardware"] > * {
+  container-type: inline-size;
+}
+
+/* The dial. At full size it is wide enough for its longest stop,
+   "conversationnel", to clear the knob, the stop beside it and the ticks
+   around it. In a narrower column every length scales with --size, so those
+   clearances hold. The registry's dial is as tall as a 240 degree sweep
+   needs; the stops here end just below the knob's center, so it is cut off
+   under them. */
+[data-skin="hardware"] [data-kit="mode-dial"]:not(#_) {
+  --size: min(324px, 100cqi);
+  --r: calc(var(--size) * 0.315);
+  --scale-gap: calc(var(--size) * 0.179);
+  height: calc(var(--size) * 0.648);
+  margin-inline: 0;
+}
+
+[data-skin="hardware"] [data-kit="mode-dial-knob"]:not(#_) {
+  width: calc(var(--size) * 0.222);
+  height: calc(var(--size) * 0.222);
+}
+
+/* Never under 8px: below about 275px of column the stops outgrow the dial a
+   little rather than become unreadable. */
+[data-skin="hardware"] [data-kit="mode-stop-label"]:not(#_) {
+  height: 22px;
+  padding: 0 calc(var(--size) * 0.025);
+  border-radius: 11px;
+  font-size: clamp(8px, calc(var(--size) * 0.0293), 9.5px);
+}
+
+[data-skin="hardware"] [data-kit="segmented"] [data-kit="segment"]:not(#_):not(#_) {
+  font-size: 10.5px;
+}
+
+/* The picker wheel. Three rows rather than the registry's five: the lens and
+   one neighbor either side, which is all a short list has to show. Its well
+   is the plate's, a shade darker toward the top and bottom where the drum
+   turns away. */
+[data-skin="hardware"] [data-kit="wheel-frame"]:not(#_) {
+  --wheel-rows: 3;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--well), #000 8%),
+    var(--well) 30%,
+    var(--well) 70%,
+    color-mix(in oklab, var(--well), #000 8%)
+  );
+  box-shadow:
+    inset 0 2px 4px rgb(0 0 0 / calc(0.12 * var(--shadow-k))),
+    inset 0 0 0 1px rgb(0 0 0 / calc(0.05 * var(--shadow-k))),
+    0 1px 0 var(--lip);
+}
+
+/* Printed like the other controls' legends. The row in the lens is in ink,
+   not the key color the registry uses: on the well that is under 4.5:1. The
+   key color stays on the two markers either side of the lens. */
+[data-skin="hardware"] [data-kit="wheel-item"]:not(#_) {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--legend);
+}
+
+[data-skin="hardware"] [data-kit="wheel-item"][data-selected]:not(#_) {
+  color: var(--ink);
+}
+
+[data-skin="hardware"] [data-kit="wheel-rail"]:not(#_) i {
+  background: var(--groove);
+}
+
+/* No focus ring for focus a press put there; see wheel-select.tsx. The
+   registry does this from a page-wide listener this app does not install. */
+[data-skin="hardware"] [data-kit="wheel-frame"][data-pointer]:has(:focus-visible):not(#_) {
+  outline: none;
+}
+
+/* Stats keep the app's existing typeface. These overrides apply only to
+   the usage and statistics panels. */
+[data-skin="hardware"].hardware-stats {
+  --sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --mono: var(--sans);
+  --paper: #fff;
+  --edge: #e5e5e5;
+  --ink: #232323;
+  --help: #606060;
+  --legend: #626262;
+  --dim: var(--legend);
+  --well: #f1f1f0;
+  --groove: rgb(0 0 0 / 0.09);
+  --lip: rgb(255 255 255 / 0.8);
+  --led-off: #d5d5d2;
+  font-family: inherit;
+  font-size: inherit;
+  text-transform: none;
+  background: none;
+  box-shadow: none;
+}
+
+.dark [data-skin="hardware"].hardware-stats {
+  --paper: #171717;
+  --edge: #333;
+  --ink: #ededed;
+  --help: #b3b3b3;
+  --legend: #b3b3b3;
+  --well: #222;
+  --groove: rgb(255 255 255 / 0.12);
+  --lip: rgb(255 255 255 / 0.06);
+  --led-off: #444;
+}
+
+[data-skin="hardware"].hardware-stats-bar {
+  border: 1px solid var(--edge);
+  background: var(--paper);
+}
+
+[data-skin="hardware"] [data-hardware="muted"] {
+  color: var(--help);
+}
+
+[data-skin="hardware"] [data-kit="meter-track"]:not(#_) {
+  background: var(--well);
+  box-shadow: inset 0 1px 3px var(--groove), 0 1px 0 var(--lip);
+}
+
+/* A compact period selector for the statistics bar. The settings panel
+   keeps the original control dimensions. */
+.hardware-stats [data-kit="segmented"]:not(#_) {
+  --slot-height: 18px;
+}
+
+.hardware-stats [data-kit="segmented"] [data-kit="segment"]:not(#_):not(#_) {
+  font-size: 10px;
+  letter-spacing: 0;
+}
+
+.hardware-stats [data-kit="segmented"] [data-kit="segment"]:is(*, [data-checked], :active):not(#_) {
+  padding-top: calc(var(--slot-height) + 18px);
+}
+
+.hardware-stats [data-kit="segment"] > [data-kit="led"]:not(#_) {
+  top: calc(var(--slot-height) + 10px);
+}

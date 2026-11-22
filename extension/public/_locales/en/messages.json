@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "upwin community"
+  },
+  "extensionDescription": {
+    "message": "Self-hosted assistant for freelancers on Upwork: profile analysis, job scoring, proposal drafts and video pitches, on your own API."
+  },
+  "commandToggleRecording": {
+    "message": "Start or stop a video proposal"
+  }
+}

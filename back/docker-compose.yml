@@ -1,0 +1,90 @@
+# The API and its database, on your machine or on a server.
+#
+#   cp .env.example .env                 then edit it
+#   docker compose up -d --build         on your machine
+#   docker compose logs -f api           follow the API logs
+#
+# On a server, add HTTPS with docker-compose.online.yml (see that file).
+#
+# Online, set API_TOKEN in .env: the API is then reachable from the internet,
+# and the token is what keeps everyone else out. Guide: docs/DEPLOY.md at the
+# repository root.
+#
+# The `migrate` service is one-shot: it applies pending migrations and exits,
+# and the API only starts once it has exited successfully.
+
+name: upwin
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    # Explicit vars only. Never env_file here: the API's .env holds the AI key,
+    # and the database has no business seeing it.
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-upwin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-upwin}
+      POSTGRES_DB: ${POSTGRES_DB:-upwin}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # No `ports:` on purpose. Postgres is reachable from the other containers
+    # over the compose network and from nowhere else.
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-upwin} -d ${POSTGRES_DB:-upwin}']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  migrate:
+    image: upwin-api:local
+    build:
+      context: .
+      target: runner
+    command: ['node', 'dist/database/migrate.js']
+    env_file: .env
+    environment: &container-env
+      DATABASE_URL: postgresql://${POSTGRES_USER:-upwin}:${POSTGRES_PASSWORD:-upwin}@db:5432/${POSTGRES_DB:-upwin}
+      HOST: 0.0.0.0
+      # The container always listens on 3002; PORT only picks the host port.
+      PORT: '3002'
+      # Safe only because the port below is published on 127.0.0.1.
+      ALLOW_NETWORK_WITHOUT_TOKEN: 'true'
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: 'no'
+
+  api:
+    image: upwin-api:local
+    build:
+      context: .
+      target: runner
+    env_file: .env
+    environment: *container-env
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    # Lets the API reach a model server on the host (Ollama, LM Studio) at
+    # host.docker.internal, on Linux as well as Docker Desktop.
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      # Loopback only: nothing else on your network can reach the API.
+      - '127.0.0.1:${PORT:-3002}:3002'
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3002/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  pgdata:

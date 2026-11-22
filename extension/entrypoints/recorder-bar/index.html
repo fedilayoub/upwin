@@ -1,0 +1,22 @@
+<!doctype html>
+<html class="upwin-theme">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>upwin recorder</title>
+    <style>
+      html, body { margin: 0 !important; padding: 0 !important; background: transparent; overflow: hidden; height: 100%; }
+      /* Transparent until the theme is known, so the host's frame (already themed) shows through
+         instead of a flash of the wrong colour. */
+      html[data-theme], html[data-theme] body { background: var(--popover) !important; }
+      /* Content sits at the bottom centre: the frame grows upward (menus) and sideways
+         (stages) around it while the host animates the frame's size. */
+      body { display: flex; align-items: flex-end; justify-content: center; }
+      #root { display: block; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

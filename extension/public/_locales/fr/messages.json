@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "upwin community"
+  },
+  "extensionDescription": {
+    "message": "Assistant auto-hébergé pour les freelances sur Upwork : analyse de profil, évaluation des missions, propositions et vidéos de présentation, sur votre propre API."
+  },
+  "commandToggleRecording": {
+    "message": "Démarrer ou arrêter une proposition vidéo"
+  }
+}

@@ -1,0 +1,714 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *, .landing-dark-panel *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-marketing-border: var(--marketing-border);
+  --color-marketing-surface-muted: var(--marketing-surface-muted);
+  --color-marketing-surface: var(--marketing-surface);
+  --color-marketing-text-muted: var(--marketing-text-muted);
+  --color-marketing-text: var(--marketing-text);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  --dashboard-accent: oklch(0.31 0.115 155);
+  --dashboard-accent-foreground: oklch(0.985 0.015 150);
+  --dashboard-accent-soft: oklch(0.965 0.035 150);
+  --dashboard-feature: var(--dashboard-accent);
+  --dashboard-feature-foreground: var(--dashboard-accent-foreground);
+  --dashboard-shadow: oklch(0.25 0.05 155 / 8%);
+  --activity-map-accent: var(--dashboard-accent);
+
+  /* Landing system: aurora green palette. */
+  --landing-page-background: oklch(1 0 0);
+  --hero-card-background: oklch(0.15 0.06 160);
+  --hero-palette-shadow: oklch(0.10 0.05 155);
+  --hero-palette-maroon: oklch(0.28 0.12 155);
+  --hero-palette-orange: oklch(0.55 0.18 155);
+  --hero-palette-amber: oklch(0.78 0.16 145);
+  --hero-palette-core: oklch(0.92 0.10 140);
+  --hero-text-primary: oklch(0.985 0.015 150);
+  --hero-text-muted: oklch(0.89 0.04 148);
+  --hero-border-hairline: oklch(0.99 0.015 150 / 24%);
+  --hero-control-surface: oklch(0.975 0.02 150 / 88%);
+  --hero-control-surface-hover: oklch(1 0 0 / 96%);
+  --hero-menu-surface: oklch(0.975 0.02 150 / 97%);
+  --hero-control-text: oklch(0.15 0.05 158);
+  --hero-secondary-surface: oklch(0.16 0.05 155 / 58%);
+  --hero-focus: oklch(0.45 0.17 152);
+  --marketing-text: oklch(0.19 0.055 158);
+  --marketing-text-muted: oklch(0.39 0.045 158);
+  --marketing-surface: oklch(0.975 0.022 151);
+  --marketing-surface-muted: oklch(0.91 0.045 153);
+  --marketing-border: oklch(0.46 0.06 155 / 20%);
+
+  /* Landing story palette, light half. Twins live in `.dark`. Nothing here may be
+     re-declared on a page-scoped element: custom properties resolve from the nearest
+     declaring ancestor, so one `<div>` doing that is what broke light mode before. */
+  --landing-accent: oklch(0.47 0.13 150);
+  --landing-accent-foreground: oklch(0.985 0.015 150);
+  --landing-accent-tint: oklch(0.72 0.155 148);
+  --landing-accent-warm: oklch(0.50 0.11 68);
+  --landing-accent-warm-tint: oklch(0.80 0.15 78);
+  --landing-line: oklch(0.45 0.09 152 / 68%);
+  --landing-panel: oklch(0.99 0.008 150);
+  --landing-panel-ink: oklch(0.19 0.055 158);
+  --landing-panel-border: oklch(0.46 0.06 155 / 20%);
+  --landing-wash-a: oklch(1 0 0 / 0%);
+  --landing-wash-b: oklch(1 0 0 / 0%);
+  --landing-glow: oklch(1 0 0 / 0%);
+  --landing-noise-opacity: 0;
+  --landing-mesh-shadow: oklch(0.88 0.055 150);
+  --landing-mesh-base: oklch(0.96 0.028 150);
+  --landing-mesh-glow: oklch(0.80 0.16 146);
+  --landing-mesh-grain: 0.012;
+  --landing-mesh-wash:
+    radial-gradient(circle at 22% 18%, color-mix(in oklch, var(--landing-accent-tint) 34%, transparent), transparent 58%),
+    linear-gradient(150deg, oklch(0.965 0.03 150 / 92%), oklch(0.90 0.05 152 / 96%));
+
+  /* Paper pair: theme-INVARIANT on purpose, no `.dark` twin. Only ever painted on a
+     surface that is dark in both themes (the flow-branch document on use-cases). */
+  --landing-ivory: oklch(0.955 0.025 92);
+  --landing-ink: oklch(0.12 0.035 157);
+
+  /* Button variant="marketingPrimary". */
+  --marketing-cta-surface: oklch(0.26 0.065 155);
+  --marketing-cta-surface-hover: oklch(0.32 0.08 153);
+  --marketing-cta-border: oklch(0.34 0.082 153);
+  --marketing-cta-ink: oklch(0.985 0.015 150);
+  --marketing-cta-shadow: oklch(0.25 0.05 155 / 22%);
+
+  /* Button variant="marketingSecondary". Light half sits on light marketing cards; the
+     dark half (`.dark`, `.landing-dark-panel`) keeps the hero glass look. */
+  --marketing-secondary-surface: oklch(1 0 0 / 72%);
+  --marketing-secondary-surface-hover: oklch(0.93 0.045 152);
+  --marketing-secondary-border: oklch(0.46 0.06 155 / 34%);
+  --marketing-secondary-ink: oklch(0.19 0.055 158);
+  --auth-cta-from: oklch(0.40 0.115 152);
+  --auth-cta-mid: oklch(0.44 0.115 151);
+  --auth-cta-to: oklch(0.47 0.115 150);
+  --auth-cta-ink: oklch(0.985 0.015 150);
+  --auth-cta-border: oklch(0.58 0.06 153);
+  --auth-cta-gradient: linear-gradient(135deg, var(--auth-cta-from) 0%, var(--auth-cta-mid) 52%, var(--auth-cta-to) 100%);
+  --auth-cta-webgl-gradient: linear-gradient(
+    105deg,
+    color-mix(in srgb, var(--hero-palette-maroon) 80%, var(--hero-palette-core)) 0%,
+    color-mix(in srgb, var(--hero-palette-maroon) 75%, var(--hero-palette-core)) 52%,
+    color-mix(in srgb, var(--hero-palette-maroon) 70%, var(--hero-palette-core)) 100%
+  );
+  --auth-accent-from: oklch(0.30 0.12 158);
+  --auth-accent-to: oklch(0.48 0.18 152);
+  --auth-page-surface: oklch(0.985 0.01 150);
+  --auth-field-surface: oklch(0.97 0.018 152);
+  --auth-field-border: oklch(0.84 0.035 154);
+  --auth-field-shadow: oklch(0.25 0.05 155 / 5%);
+  --auth-sso-surface: oklch(0.995 0.006 150);
+  --auth-sso-surface-hover: oklch(0.965 0.025 150);
+  --auth-sso-border: oklch(0.58 0.06 153);
+  --auth-focus: oklch(0.45 0.17 152);
+  --auth-logo-surface: oklch(0.18 0.07 158);
+  --auth-logo-border: oklch(0.35 0.08 154 / 35%);
+  --auth-logo-ink: oklch(0.97 0.025 148);
+  --hero-poster:
+    radial-gradient(92% 76% at 88% 28%, var(--hero-palette-core) 0%, color-mix(in srgb, var(--hero-palette-maroon) 50%, var(--hero-palette-core)) 28%, var(--hero-palette-maroon) 52%, transparent 72%),
+    radial-gradient(85% 78% at 12% 94%, var(--hero-palette-maroon) 0%, transparent 67%),
+    linear-gradient(135deg, var(--hero-palette-shadow) 8%, var(--hero-palette-maroon) 56%, var(--hero-card-background) 100%);
+
+  /* The poster's three gradients, split so each can move on its own. Stacked
+     back to front they composite to exactly --hero-poster. The glow and corner
+     layers are inset -12%, so their gradient centres and radii are divided by
+     1.24 to land in the same place on screen; the overhang is what lets them
+     drift without exposing an edge. */
+  --hero-layer-base:
+    linear-gradient(135deg, var(--hero-palette-shadow) 8%, var(--hero-palette-maroon) 56%, var(--hero-card-background) 100%);
+  --hero-layer-corner:
+    radial-gradient(68.55% 62.9% at 19.35% 85.48%, var(--hero-palette-maroon) 0%, transparent 67%);
+  --hero-layer-glow:
+    radial-gradient(74.19% 61.29% at 80.65% 32.26%, var(--hero-palette-core) 0%, color-mix(in srgb, var(--hero-palette-maroon) 50%, var(--hero-palette-core)) 28%, var(--hero-palette-maroon) 52%, transparent 72%);
+}
+
+/* `.landing-dark-panel` is an alias, not a copy. A region that is deliberately dark
+   in BOTH themes (hero card, footer card, legal aside, the use-cases flow card) opts
+   into the dark half of every token instead of re-declaring any of them. See
+   `.landing-story` below for what hand-rolled overrides cost. */
+.dark,
+.landing-dark-panel {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+  --dashboard-accent: oklch(0.86 0.105 139);
+  --dashboard-accent-foreground: oklch(0.13 0.045 158);
+  --dashboard-accent-soft: oklch(0.24 0.035 154);
+  --dashboard-feature: oklch(0.22 0.06 155);
+  --dashboard-feature-foreground: oklch(0.97 0.02 148);
+  --dashboard-shadow: oklch(0.02 0.02 155 / 36%);
+  --activity-map-accent: var(--dashboard-accent);
+
+  /* Landing system: aurora green dark palette. */
+  --landing-page-background: oklch(0.08 0.015 155);
+  --hero-card-background: oklch(0.10 0.05 158);
+  --hero-palette-shadow: oklch(0.07 0.04 155);
+  --hero-palette-maroon: oklch(0.20 0.10 155);
+  --hero-palette-orange: oklch(0.48 0.18 152);
+  --hero-palette-amber: oklch(0.72 0.17 145);
+  --hero-palette-core: oklch(0.88 0.10 138);
+  --hero-text-primary: oklch(0.985 0.015 150);
+  --hero-text-muted: oklch(0.84 0.04 148);
+  --hero-border-hairline: oklch(0.99 0.012 150 / 16%);
+  --hero-control-surface: oklch(0.16 0.04 155 / 72%);
+  --hero-control-surface-hover: oklch(0.21 0.05 155 / 86%);
+  --hero-menu-surface: oklch(0.12 0.04 155 / 96%);
+  --hero-control-text: oklch(0.97 0.02 150);
+  --hero-secondary-surface: oklch(0.16 0.04 155 / 64%);
+  --hero-focus: oklch(0.84 0.17 145);
+  --marketing-text: oklch(0.96 0.022 149);
+  --marketing-text-muted: oklch(0.77 0.038 150);
+  --marketing-surface: oklch(0.13 0.035 157);
+  --marketing-surface-muted: oklch(0.17 0.045 156);
+  --marketing-border: oklch(0.86 0.055 148 / 16%);
+
+  /* Landing story palette, dark half. Moved verbatim out of the old page-scoped
+     `.landing-story` block, so dark mode is unchanged by this refactor. The `-tint`
+     tokens alias the base accents here: on a dark ground one value does both jobs. */
+  --landing-accent: oklch(0.84 0.14 142);
+  --landing-accent-foreground: oklch(0.12 0.035 157);
+  --landing-accent-tint: oklch(0.84 0.14 142);
+  --landing-accent-warm: oklch(0.83 0.12 88);
+  --landing-accent-warm-tint: oklch(0.83 0.12 88);
+  --landing-line: oklch(0.83 0.09 143 / 38%);
+  --landing-panel: oklch(0.955 0.025 92);
+  --landing-panel-ink: oklch(0.12 0.035 157);
+  --landing-panel-border: transparent;
+  --landing-wash-a: oklch(0.23 0.09 151 / 26%);
+  --landing-wash-b: oklch(0.17 0.075 148 / 22%);
+  --landing-glow: oklch(0.39 0.13 146 / 11%);
+  --landing-noise-opacity: 0.035;
+  --landing-mesh-shadow: oklch(0.12 0.035 157);
+  --landing-mesh-base: oklch(0.075 0.025 157);
+  --landing-mesh-glow: oklch(0.84 0.14 142);
+  --landing-mesh-grain: 0.035;
+  --landing-mesh-wash:
+    radial-gradient(circle at 22% 18%, color-mix(in oklch, var(--landing-accent) 16%, transparent), transparent 58%),
+    linear-gradient(150deg, oklch(0.17 0.055 153 / 78%), oklch(0.08 0.03 158 / 94%));
+
+  --marketing-cta-surface: oklch(1 0 0);
+  --marketing-cta-surface-hover: oklch(0.95 0.01 150);
+  --marketing-cta-border: oklch(1 0 0 / 60%);
+  --marketing-cta-ink: oklch(0.19 0.02 152);
+  --marketing-cta-shadow: oklch(0.05 0.03 20 / 40%);
+
+  --marketing-secondary-surface: oklch(0.16 0.04 155 / 64%);
+  --marketing-secondary-surface-hover: oklch(1 0 0 / 14%);
+  --marketing-secondary-border: oklch(0.99 0.012 150 / 16%);
+  --marketing-secondary-ink: oklch(0.985 0.015 150);
+  --auth-cta-from: oklch(0.34 0.10 152);
+  --auth-cta-mid: oklch(0.37 0.10 151);
+  --auth-cta-to: oklch(0.40 0.10 150);
+  --auth-cta-ink: oklch(0.985 0.014 148);
+  --auth-cta-border: oklch(0.50 0.08 150);
+  --auth-cta-gradient: linear-gradient(135deg, var(--auth-cta-from) 0%, var(--auth-cta-mid) 52%, var(--auth-cta-to) 100%);
+  --auth-accent-from: oklch(0.68 0.14 148);
+  --auth-accent-to: oklch(0.84 0.09 143);
+  --auth-page-surface: oklch(0.095 0.028 158);
+  --auth-field-surface: oklch(0.145 0.038 157);
+  --auth-field-border: oklch(0.31 0.06 154 / 78%);
+  --auth-field-shadow: oklch(0.035 0.025 158 / 46%);
+  --auth-sso-surface: oklch(0.115 0.03 158);
+  --auth-sso-surface-hover: oklch(0.15 0.044 155);
+  --auth-sso-border: oklch(0.50 0.08 150);
+  --auth-focus: oklch(0.69 0.14 147);
+  --auth-logo-surface: oklch(0.19 0.07 156);
+  --auth-logo-border: oklch(0.62 0.11 149 / 32%);
+  --auth-logo-ink: oklch(0.97 0.025 148);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  /* The site header is fixed, so anchor jumps land below it. */
+  html {
+    scroll-padding-top: 6.5rem;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+  }
+}
+
+.cl-rootBox {
+  width: 100%;
+}
+
+.cl-cardBox {
+  width: 100%;
+}
+
+.cl-navbar > *:last-child {
+  display: none;
+}
+.cl-navbar > *:first-child {
+  background: none;
+}
+
+.auth-heading-accent {
+  color: var(--foreground);
+}
+
+/* Not decoration: this keeps the auth surface from ever being one flat fill.
+   The compositor draws a raster tile that holds a single colour as a
+   solid-colour quad instead of a texture, and the two paths disagree on this
+   surface, which is outside the sRGB gamut. The form leaves the bottom strip of
+   the page empty, and hovering a button repaints the layer: that strip flipped
+   to a solid quad for the length of the transition and showed as a darker band
+   (Chrome on macOS, P3 display). A gradient is a shader, so every tile stays a
+   texture. The 1% mix is one 8-bit step at most. */
+.auth-shell {
+  background-image: linear-gradient(
+    to bottom,
+    var(--auth-page-surface),
+    color-mix(in oklab, var(--auth-page-surface) 99%, var(--auth-focus))
+  );
+}
+
+.auth-primary-button {
+  border: 1px solid var(--auth-cta-border);
+  background-image: var(--auth-cta-gradient);
+  background-image: var(--auth-cta-webgl-gradient);
+  box-shadow:
+    0 14px 34px oklch(0.12 0.07 155 / 28%),
+    inset 0 1px 0 oklch(1 0 0 / 16%);
+  color: var(--auth-cta-ink);
+}
+
+.auth-input {
+  background: var(--auth-field-surface);
+  border-color: var(--auth-field-border);
+  box-shadow:
+    0 8px 24px var(--auth-field-shadow),
+    inset 0 1px 0 oklch(1 0 0 / 5%);
+}
+
+.auth-sso-button {
+  background: var(--auth-sso-surface);
+  border-color: var(--auth-sso-border);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 5%);
+}
+
+.auth-sso-button:hover {
+  background: var(--auth-sso-surface-hover);
+  border-color: var(--auth-focus);
+  box-shadow:
+    0 10px 28px oklch(0.08 0.045 155 / 18%),
+    inset 0 1px 0 oklch(1 0 0 / 8%);
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .auth-heading-accent {
+    background-image: linear-gradient(135deg, var(--auth-accent-from), var(--auth-accent-to));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* Hero background motion.
+
+   Transform and opacity only: both are compositor properties, so the drift
+   costs no layout, no paint and no main-thread work — it is three stacked
+   gradient layers being re-composited by the GPU. Durations are deliberately
+   coprime so the layers never fall into a visible common cycle. */
+@keyframes hero-glow-drift {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: translate3d(1.4%, -1.1%, 0) scale(1.045);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(-1.1%, 0.9%, 0) scale(0.985);
+  }
+}
+
+@keyframes hero-corner-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.01);
+  }
+  100% {
+    transform: translate3d(1.6%, -1.3%, 0) scale(1.05);
+  }
+}
+
+.hero-layer {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-layer-drift {
+  inset: -12%;
+}
+
+.hero-layer-glow {
+  animation: hero-glow-drift 41s ease-in-out infinite alternate;
+}
+
+.hero-layer-corner {
+  animation: hero-corner-drift 67s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Reduce, not remove: a quarter of the travel at half the speed. The layers
+     still breathe, slowly enough that it cannot read as motion sickness. */
+  .hero-layer-glow {
+    animation-duration: 82s;
+    scale: 0.997;
+  }
+  .hero-layer-corner {
+    animation-duration: 134s;
+  }
+}
+
+/* Live illustrations (components/marketing/live): entrances for swapped labels,
+   the typing caret, and the status dot. Transform and opacity only. */
+@keyframes live-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes live-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+@keyframes live-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes live-wave {
+  50% {
+    transform: scaleY(0.3);
+  }
+}
+
+@keyframes live-pulse {
+  50% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+}
+
+/* Chrome install pill shimmer: a soft highlight band sweeps across, then
+   rests. Transform only, so it stays on the compositor like the layers above. */
+@keyframes hero-shimmer-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  45%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.hero-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  animation: hero-shimmer-sweep 3.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-shimmer::after {
+    animation: none;
+  }
+}
+
+/* Hero entrance (components/hero/hero-showcase.tsx). Pure CSS so it starts with
+   the first paint: the headline is the page's largest paint and must not wait on
+   JavaScript. Each line rises in turn, the cards fan out from the middle one,
+   then float. `--hero-order` and `--hero-cards-start` are set inline.
+   Easing is GSAP's power4.out; the float is sine.inOut. */
+/* The headline starts at 1% opacity, not 0. Chrome skips fully transparent text
+   when it records the largest paint and, because this fade runs on the
+   compositor, would not look again until the animation ended, reporting the
+   headline about 0.9s late. To the eye 1% and 0 are the same first frame. */
+@keyframes hero-line-rise {
+  from {
+    opacity: 0.01;
+    transform: translateY(48%);
+  }
+}
+
+@keyframes hero-card-rise {
+  from {
+    opacity: 0;
+    rotate: 0deg;
+    transform: translateY(76px) scale(0.76);
+  }
+}
+
+@keyframes hero-card-float {
+  to {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-hero-line] {
+    animation: hero-line-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(var(--hero-order, 0) * 0.1s);
+  }
+
+  [data-goal-card] {
+    animation: hero-card-rise 1.05s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(var(--hero-cards-start, 0.48s) + var(--hero-order, 0) * 0.08s);
+  }
+
+  [data-goal-card] [data-goal-float] {
+    animation: hero-card-float 2.8s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
+    animation-delay: calc(1.1s + var(--hero-order, 0) * 0.22s);
+  }
+}
+
+/* Scroll reveals (components/marketing/landing-motion.tsx). The script arms a
+   scope and marks targets `data-revealed`; everything else is here. Unarmed (no
+   JS, reduced motion) nothing is hidden. A revealed target keeps the end state
+   (identity transform, full opacity), which is what the layout below it was
+   built against. Easing is GSAP's power3.out. */
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--reveal-distance, 38px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-reveal-armed] [data-reveal]:not([data-revealed]),
+[data-reveal-armed] [data-reveal-group]:not([data-revealed]) > * {
+  opacity: 0;
+  visibility: hidden;
+}
+
+[data-reveal][data-revealed] {
+  animation: reveal-rise 0.82s cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+[data-reveal-group][data-revealed] > * {
+  --reveal-distance: 24px;
+  animation: reveal-rise 0.68s cubic-bezier(0.25, 1, 0.5, 1) both;
+  animation-delay: calc(var(--reveal-order, 0) * 0.08s);
+}
+
+/* Word-by-word heading reveal (components/ui/blur-reveal.tsx). The words only
+   exist once the script has split the text, so there is no unarmed state. */
+@keyframes blur-word-in {
+  from {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateY(42%);
+  }
+}
+
+.blur-reveal-word {
+  display: inline-block;
+  opacity: 0;
+  visibility: hidden;
+}
+
+[data-revealed] > .blur-reveal-word {
+  opacity: 1;
+  visibility: visible;
+  animation: blur-word-in 0.95s cubic-bezier(0.25, 1, 0.5, 1) backwards;
+  animation-delay: var(--word-delay, 0s);
+}
+
+/* Landing story below the hero. The ONLY declarations allowed in this block are ones
+   with no theme twin, so the subtree keeps following next-themes. Re-declaring
+   --marketing-* or --landing-page-background here is exactly what made every section
+   below the hero dark in light mode; add a token to both halves instead. Never declare
+   --background, --foreground, --muted-foreground or --border here either: the ECharts
+   colour resolver probes those four off a throwaway span and an ancestor override
+   silently repaints every chart axis. */
+.landing-story {
+  background:
+    radial-gradient(circle at 8% 8%, var(--landing-wash-a), transparent 31rem),
+    radial-gradient(circle at 92% 48%, var(--landing-wash-b), transparent 38rem),
+    var(--landing-page-background);
+  color: var(--marketing-text);
+}
+
+.landing-story::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E");
+  content: '';
+  opacity: var(--landing-noise-opacity);
+  pointer-events: none;
+}
+
+.landing-story__glow {
+  position: absolute;
+  z-index: -1;
+  width: min(54rem, 70vw);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: var(--landing-glow);
+  filter: blur(90px);
+  pointer-events: none;
+}
+
+.landing-story__glow--top {
+  top: 18rem;
+  right: -22rem;
+}
+
+.landing-story__glow--bottom {
+  bottom: 22rem;
+  left: -28rem;
+}
+
+/* Footer giant outlined wordmark.
+   Gradient goes: card-bg (invisible fill) → real gradient colors.
+   Default position shows the card-bg portion = outline only.
+   Hover slides to reveal the gradient through background-clip: text. */
+.footer-wordmark-container {
+  --wm-stroke: var(--hero-border-hairline);
+  --wm-bg: var(--hero-card-background);
+  --wm-from: color-mix(in srgb, var(--hero-palette-maroon) 82%, var(--hero-palette-core));
+  --wm-via: color-mix(in srgb, var(--hero-palette-maroon) 58%, var(--hero-palette-core));
+  --wm-to: color-mix(in srgb, var(--hero-palette-maroon) 38%, var(--hero-palette-core));
+}
+
+.footer-wordmark {
+  font-size: clamp(6rem, 18vw, 16rem);
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--wm-stroke);
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(
+    to top,
+    var(--wm-bg) 0%,
+    var(--wm-bg) 33%,
+    var(--wm-from) 40%,
+    var(--wm-via) 66%,
+    var(--wm-to) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-size: 100% 300%;
+  background-position: 0% 100%;
+  transition: background-position 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.footer-wordmark-container:hover .footer-wordmark {
+  background-position: 0% 0%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-wordmark {
+    transition-duration: 0s;
+  }
+}

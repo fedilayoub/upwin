@@ -1,0 +1,31 @@
+# HTTPS in front of the API for an online install. Caddy gets and renews the
+# certificate for API_DOMAIN on its own; point that domain's DNS A record at
+# this server first, and open ports 80 and 443.
+#
+#   API_DOMAIN=api.example.com \
+#     docker compose -f docker-compose.yml -f docker-compose.online.yml up -d --build
+#
+# Set API_TOKEN in .env first: the API is now reachable from the internet, and
+# the token is what keeps everyone else out. Guide: docs/DEPLOY.md at the repository root
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?Set API_DOMAIN to the API's public host name, e.g. api.example.com}
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  caddy-data:
+  caddy-config:

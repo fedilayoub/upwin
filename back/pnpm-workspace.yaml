@@ -1,0 +1,9 @@
+# pnpm 11 blocks postinstall scripts until each package has an explicit
+# decision, and an undecided package makes every `pnpm run` exit 1.
+allowBuilds:
+  # Native binaries that must unpack to work.
+  '@swc/core': true
+  esbuild: true
+  unrs-resolver: true
+  # Telemetry only. Denied deliberately.
+  '@scarf/scarf': false

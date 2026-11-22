@@ -1,0 +1,6 @@
+export const HIGH_FIT_THRESHOLD = 70;
+export const MINIMUM_OUTCOME_SAMPLE = 5;
+export const ACTIVITY_WINDOW_DAYS = 365;
+export const SPARKLINE_POINTS = 12;
+export const RECENT_ACTIVITY_LIMIT = 5;
+export const SCORE_HISTORY_DEFAULT_LIMIT = 100;

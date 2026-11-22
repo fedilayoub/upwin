@@ -1,0 +1,34 @@
+{
+  "key": "fe6587b60ef274365b7adffbb1655fcf20ae6f39864d83178e5b98166c3fa2f3",
+  "capability": "profileAnalyzer",
+  "requestedModelId": "gpt-4.1-nano",
+  "servedModelId": "openai/gpt-4.1-nano",
+  "recordedAt": "2026-08-20T10:25:31.000Z",
+  "request": {
+    "system": "Gateway structured-output cassette probe.",
+    "prompt": "Return the phase-8 gateway probe object for profileAnalyzer.",
+    "temperature": 0.2
+  },
+  "response": {
+    "object": {
+      "capability": "profileAnalyzer",
+      "fixtureVersion": "phase-8-gateway-probe",
+      "probeScore": 85
+    },
+    "usage": {
+      "inputTokens": 91,
+      "outputTokens": 23,
+      "totalTokens": 114,
+      "inputTokenDetails": {
+        "noCacheTokens": 91,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0
+      },
+      "outputTokenDetails": {
+        "textTokens": 23,
+        "reasoningTokens": 0
+      }
+    },
+    "finishReason": "stop"
+  }
+}
