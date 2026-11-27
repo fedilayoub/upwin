@@ -11,7 +11,7 @@ import { renderProposalWriterSystem } from './system';
 import { renderUserInstructions } from './user-instructions';
 import { renderWritingPolicy } from './writing-policy';
 
-export const proposalWriterPromptVersion = 'proposal-writer-v3' as const;
+export const proposalWriterPromptVersion = 'proposal-writer-v4' as const;
 
 export interface AssembledProposalWriterPrompt {
   system: string;

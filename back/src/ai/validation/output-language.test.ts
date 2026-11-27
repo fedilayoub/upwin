@@ -131,6 +131,28 @@ describe('output language check', () => {
     );
   });
 
+  it('accepts casual French built on on, il, met and nos', () => {
+    for (const text of [
+      'Oui, on a déjà fait ça: on livre en deux semaines et on documente tout.',
+      "Il faut d'abord un audit du workflow, puis on met en place les automatisations n8n et Make, et on teste end-to-end.",
+      'Non, il n’y a pas de souci, on peut caler nos points sur votre fuseau horaire.',
+    ]) {
+      expect(isInOtherLanguage(text, 'fr'), text).toBe(false);
+    }
+  });
+
+  it('ignores acronyms such as AI, which lowercases to French ai', () => {
+    const text =
+      'n8n, Make, Zapier, OpenAI API, AI agents, AI chatbots, AI voice, Python, FastAPI';
+    expect(languageHits(text).fr).toBe(0);
+    expect(isInOtherLanguage(text, 'en')).toBe(false);
+  });
+
+  it('still counts a function word written in capitals at the start', () => {
+    expect(languageHits('Avec vous').fr).toBe(2);
+    expect(languageHits('À vous').fr).toBe(2);
+  });
+
   it('passes a block with too few function words to judge', () => {
     expect(isInOtherLanguage('React, Node.js, AWS and Postgres.', 'es')).toBe(
       false,

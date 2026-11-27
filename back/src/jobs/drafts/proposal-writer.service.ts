@@ -15,7 +15,10 @@ import { assembleProposalWriterPrompt } from '../../ai/prompts/proposal-writer/a
 import type { ProposalWriterPromptInput } from '../../ai/prompts/proposal-writer/prompt-data';
 import { proposalDraftSchema } from '../../ai/schemas/proposal-draft.schema';
 import { hasUnsupportedNumericClaim } from '../../ai/validation/numeric-claims';
-import { isInOtherLanguage } from '../../ai/validation/output-language';
+import {
+  isInOtherLanguage,
+  languageHits,
+} from '../../ai/validation/output-language';
 import { ModelSelectionsService } from '../../ai/model-selections.service';
 import type { ProposalDraftRow } from '../../database/schema';
 import { FreelancerContextService } from '../../freelancer-context/freelancer-context.service';
@@ -114,6 +117,7 @@ export class ProposalWriterService {
     const source = await this.loadSource(userId, analysisId);
     const prompt = assembleProposalWriterPrompt(source.promptInput);
     const generated = await this.generateAndValidate(
+      userId,
       prompt,
       source.promptInput,
       source.promptInput.preferences,
@@ -196,6 +200,7 @@ export class ProposalWriterService {
       },
     });
     const generated = await this.generateAndValidate(
+      userId,
       prompt,
       source.promptInput,
       source.promptInput.preferences,
@@ -289,6 +294,7 @@ export class ProposalWriterService {
   }
 
   private async generateAndValidate(
+    userId: string,
     prompt: ReturnType<typeof assembleProposalWriterPrompt>,
     factualInputs: ProposalWriterFactualInputs,
     preferences: ProposalPreferencesResponse,
@@ -350,10 +356,21 @@ export class ProposalWriterService {
           );
         }
       }
-      validateLanguage(
-        [proposalText, ...answerWords.map((answer) => answer.text)],
+      const languageMismatch = findLanguageMismatch(
+        [
+          { label: 'proposal', text: proposalText },
+          ...answerWords.map((answer) => ({
+            label: `answer ${answer.position}`,
+            text: answer.text,
+          })),
+        ],
         preferences.language,
       );
+      if (languageMismatch) {
+        this.logger.warn(
+          `Draft kept, but a block may not use the requested language (${languageMismatch}, userId=${userId}).`,
+        );
+      }
 
       return {
         proposal: { text: proposalText, wordCount: proposalWords },
@@ -408,18 +425,30 @@ export function countWords(value: string): number {
   return words?.length ?? 0;
 }
 
-function validateLanguage(
-  blocks: string[],
+/**
+ * The first block that reads as another language, described by its label and
+ * stopword counts (never its text), or null when every block passes.
+ *
+ * A warning, not a rejection. The stopword check misread valid French,
+ * Spanish, Portuguese and English answers, and a false alarm cost the user
+ * the whole draft. The user reads every draft before sending it, so a
+ * wrong-language one is obvious and can be regenerated. The prompt is what
+ * holds the language; this only shows in the log whether the model drifts.
+ */
+function findLanguageMismatch(
+  blocks: Array<{ label: string; text: string }>,
   requested: ProposalPreferencesResponse['language'],
-): void {
-  const meaningfulBlocks = blocks.filter((block) => countWords(block) >= 8);
-  for (const block of meaningfulBlocks) {
-    if (isInOtherLanguage(block, requested)) {
-      throw new DraftDomainValidationError(
-        'A generated block does not use the requested language.',
-      );
-    }
+): string | null {
+  for (const block of blocks) {
+    if (countWords(block.text) < 8) continue;
+    if (!isInOtherLanguage(block.text, requested)) continue;
+    const hits = Object.entries(languageHits(block.text))
+      .filter(([, count]) => count > 0)
+      .map(([language, count]) => `${language}:${count}`)
+      .join(' ');
+    return `block=${block.label}, requested=${requested}, hits=${hits}`;
   }
+  return null;
 }
 
 function proposalBlock(
