@@ -512,6 +512,24 @@ export function registerRecordingController() {
       .safeParse(value);
     return parsed.success ? parsed.data : null;
   }
+  /**
+   * The host page's geometry, from its own viewport report and the tab's zoom (no permission
+   * needed). Null without a full report: the compositor then sizes its camera by share.
+   */
+  async function pageGeometry(
+    ui: RecorderUi,
+  ): Promise<RecordingSettings["pageGeometry"]> {
+    const viewport = ui.viewport;
+    if (!viewport?.outerW || !viewport.screenW || ui.tabId === null)
+      return null;
+    const zoom = await browser.tabs.getZoom(ui.tabId).catch(() => 1);
+    return {
+      innerW: viewport.w,
+      outerW: viewport.outerW,
+      screenW: viewport.screenW,
+      zoom: Number.isFinite(zoom) ? Math.min(5, Math.max(0.25, zoom)) : 1,
+    };
+  }
 
   /** Start a recording. Tab and Area go through `tabCapture` when it was granted. */
   async function start(requested: RecordingSettings): Promise<boolean> {
@@ -520,9 +538,10 @@ export function registerRecordingController() {
     const bubble = await bubblePreferences();
     const settings: RecordingSettings = {
       ...requested,
-      // Never trust a page-provided stream id, size or layer.
+      // Never trust a page-provided stream id, size, geometry or layer.
       tabStreamId: null,
       tabSize: null,
+      pageGeometry: await pageGeometry(ui),
       cameraLayer: "composite",
       ...(bubble
         ? {

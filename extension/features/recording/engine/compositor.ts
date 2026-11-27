@@ -4,7 +4,9 @@ import {
   bubbleRect,
   cameraSquare,
   fitContain,
+  framePxPerCss,
   outputSize,
+  type PageGeometry,
   sourceRect,
   type Size,
 } from "./layout";
@@ -31,10 +33,13 @@ export function createCompositor(
   onError: (error: unknown) => void,
   /** Tab capture tracks may report no size; the requested tab size is the source size then. */
   sourceSize: { w: number; h: number } | null = null,
+  /** The host page's geometry: the camera then matches the page bubble's size. */
+  page: PageGeometry | null = null,
 ): Composite {
   const { MediaStreamTrackProcessor, MediaStreamTrackGenerator } =
     breakoutBox();
   const settings = display.getSettings(),
+    surface = settings.displaySurface,
     size = outputSize(
       {
         w: settings.width ?? sourceSize?.w ?? 1920,
@@ -86,7 +91,13 @@ export function createCompositor(
         dest.h,
       );
       if (drawsCamera() && latestCamera) {
-        const bubble = bubbleRect(size, live.bubbleCorner, live.bubbleSize),
+        // Output pixels per CSS pixel of the page: frame pixels per CSS pixel, then scaled to
+        // the output like the rest of the frame.
+        const pagePx = page
+            ? framePxPerCss(surface, latestDisplay!.displayWidth, page) *
+              (dest.w / src.w)
+            : null,
+          bubble = bubbleRect(size, live.bubbleCorner, live.bubbleSize, pagePx),
           square = cameraSquare(
             { w: latestCamera.displayWidth, h: latestCamera.displayHeight },
             live.bubbleZoom,

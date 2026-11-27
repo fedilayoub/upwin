@@ -963,6 +963,8 @@ function mount(): HostHandle {
         w: Math.round(window.innerWidth),
         h: Math.round(window.innerHeight),
         dpr: window.devicePixelRatio || 1,
+        outerW: Math.round(window.outerWidth),
+        screenW: Math.round(window.screen.width),
       },
     });
   const reportVisibility = () =>

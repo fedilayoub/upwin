@@ -1,4 +1,10 @@
-import type { BubbleCorner, BubbleSize, NormalizedRect } from "../protocol";
+import { BUBBLE_PX } from "../host-layout";
+import type {
+  BubbleCorner,
+  BubbleSize,
+  NormalizedRect,
+  RecordingSettings,
+} from "../protocol";
 export interface Size {
   w: number;
   h: number;
@@ -32,14 +38,49 @@ export function fitContain(src: Size, out: Size): Rect {
     h = src.h * scale;
   return { x: (out.w - w) / 2, y: (out.h - h) / 2, w, h };
 }
+export type PageGeometry = NonNullable<RecordingSettings["pageGeometry"]>;
+/**
+ * How many captured-frame pixels one CSS pixel of the host page covers.
+ *
+ * The frame's own width is the measure, never the device pixel ratio: a picked source arrives
+ * already scaled (getDisplayMedia is capped at 1920×1080, so a 3024-pixel Retina screen comes in
+ * at about 1662). What the frame spans depends on the surface:
+ * - a tab (one-click `tabCapture`, or a tab from the picker): the viewport, in CSS pixels;
+ * - a window: the browser window, `outerWidth` in DIPs;
+ * - a monitor: the screen, `screen.width` in DIPs.
+ * The tab's zoom turns the page's CSS pixels into DIPs.
+ */
+export function framePxPerCss(
+  surface: string | undefined,
+  frameW: number,
+  page: PageGeometry,
+): number {
+  if (surface === "monitor") return (frameW / page.screenW) * page.zoom;
+  if (surface === "window") return (frameW / page.outerW) * page.zoom;
+  return frameW / page.innerW;
+}
+/** The camera as a share of the output's shorter edge, when the page's scale is unknown. */
+const BUBBLE_SHARE: Record<BubbleSize, number> = { sm: 0.18, md: 0.24, lg: 0.32 };
+/**
+ * The compositor's camera.
+ *
+ * `pagePx` is how many output pixels one CSS pixel of the host page covers. With it, the camera
+ * is the page bubble's own size, so the video shows the same camera size whether the page bubble
+ * or the compositor draws it (a screen capture switches to the compositor when the host tab is
+ * hidden). Without it, the camera is a share of the output's shorter edge.
+ */
 export function bubbleRect(
   out: Size,
   corner: BubbleCorner,
   size: BubbleSize,
+  pagePx: number | null = null,
 ): Rect {
   const edge = Math.min(out.w, out.h),
-    d = edge * { sm: 0.18, md: 0.24, lg: 0.32 }[size],
-    m = edge * 0.03;
+    m = edge * 0.03,
+    d =
+      pagePx && pagePx > 0
+        ? Math.min(edge - 2 * m, BUBBLE_PX[size] * pagePx)
+        : edge * BUBBLE_SHARE[size];
   return {
     x: corner.endsWith("left") ? m : Math.max(0, out.w - m - d),
     y: corner.startsWith("top") ? m : Math.max(0, out.h - m - d),
