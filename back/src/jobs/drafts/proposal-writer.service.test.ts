@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import type { LanguageModelUsage } from 'ai';
 import { describe, expect, it, vi } from 'vitest';
 import type { ModelRegistryService } from '../../ai/model-registry.service';
@@ -182,7 +183,7 @@ describe('ProposalWriterService', () => {
 
     expect(response.proposal.text).toContain('2-3 relevant examples');
     expect(harness.persist).toHaveBeenCalledWith(
-      expect.objectContaining({ promptVersion: 'proposal-writer-v3' }),
+      expect.objectContaining({ promptVersion: 'proposal-writer-v4' }),
     );
   });
 
@@ -229,21 +230,56 @@ describe('ProposalWriterService', () => {
   });
 
   it.each(['fr', 'de', 'es', 'it', 'nl', 'pt'] as const)(
-    'rejects English prose when %s output is requested',
+    'keeps English prose when %s output is requested and logs a warning without the text',
     async (language) => {
+      const warn = vi
+        .spyOn(Logger.prototype, 'warn')
+        .mockImplementation(() => undefined);
       const harness = serviceWith({
         language,
         object: { proposal: proposalText, answers: validAnswers },
       });
 
-      await expect(
-        harness.service.create(USER_ID, ANALYSIS_ID, {}),
-      ).rejects.toMatchObject({
-        response: { code: 'DRAFT_GENERATION_FAILED' },
-      });
-      expect(harness.persist).not.toHaveBeenCalled();
+      try {
+        await harness.service.create(USER_ID, ANALYSIS_ID, {});
+
+        expect(harness.persist).toHaveBeenCalledOnce();
+        const warning = warn.mock.calls
+          .map(([message]) => String(message))
+          .find((message) => message.includes('requested language'));
+        expect(warning).toMatch(
+          new RegExp(
+            `\\(block=proposal, requested=${language}, hits=en:\\d+.*, userId=${USER_ID}\\)\\.$`,
+          ),
+        );
+        expect(warning).not.toContain(proposalText.slice(0, 20));
+      } finally {
+        warn.mockRestore();
+      }
     },
   );
+
+  it('logs no language warning for a draft in the requested language', async () => {
+    const warn = vi
+      .spyOn(Logger.prototype, 'warn')
+      .mockImplementation(() => undefined);
+    const harness = serviceWith({
+      object: { proposal: proposalText, answers: validAnswers },
+    });
+
+    try {
+      await harness.service.create(USER_ID, ANALYSIS_ID, {});
+
+      expect(harness.persist).toHaveBeenCalledOnce();
+      expect(
+        warn.mock.calls.some(([message]) =>
+          String(message).includes('requested language'),
+        ),
+      ).toBe(false);
+    } finally {
+      warn.mockRestore();
+    }
+  });
 
   it('persists a valid proposal with no answers for a job with zero questions', async () => {
     const harness = serviceWith({

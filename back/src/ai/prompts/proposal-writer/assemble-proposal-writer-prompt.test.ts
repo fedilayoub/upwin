@@ -93,7 +93,18 @@ describe('proposal writer prompt assembly', () => {
   });
 
   it('pins the prompt version', () => {
-    expect(assemble({}).promptVersion).toBe('proposal-writer-v3');
+    expect(assemble({}).promptVersion).toBe('proposal-writer-v4');
+  });
+
+  it('names the requested language in full for every block', () => {
+    const prompt = assemble({ language: 'fr' }).prompt;
+
+    expect(prompt).toContain(
+      'Write the proposal and every screening answer in French, even when the job post, the screening questions or the freelancer context use another language.',
+    );
+    expect(prompt).toContain(
+      'Write the proposal and every answer in the language named under PREFERENCES.',
+    );
   });
 });
 

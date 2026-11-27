@@ -21,7 +21,7 @@ describe('proposal writer policy', () => {
     expect(policy).not.toContain(
       'Use only facts present in the confirmed freelancer context',
     );
-    expect(proposalWriterPromptVersion).toBe('proposal-writer-v3');
+    expect(proposalWriterPromptVersion).toBe('proposal-writer-v4');
   });
 
   it('makes the opening-order rule a style default, not a hard rule', () => {

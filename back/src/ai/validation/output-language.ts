@@ -11,7 +11,9 @@ import type { OutputLanguage } from '../../proposal-preferences/proposal-prefere
  * one a text is in, so it is not counted at all (see `DISTINCTIVE`). Listing
  * a shared word under each language that uses it is what keeps it from
  * counting against the others: German `an` and `was` are listed so a German
- * draft does not score as English.
+ * draft does not score as English, and French `on`, `il`, `met` and `nos` are
+ * listed so a casual French answer ("on a déjà fait ça, il y a un an") does
+ * not score as English, Italian, Dutch or Portuguese.
  */
 const STOPWORDS: Record<OutputLanguage, readonly string[]> = {
   en: [
@@ -71,12 +73,16 @@ const STOPWORDS: Record<OutputLanguage, readonly string[]> = {
     'en',
     'est',
     'et',
+    'il',
     'je',
     'la',
     'le',
     'les',
+    'met',
     'mon',
+    'nos',
     'nous',
+    'on',
     'ou',
     'par',
     'pas',
@@ -302,13 +308,27 @@ const DISTINCTIVE: ReadonlyMap<string, OutputLanguage> = (() => {
 /** How few distinctive words a rival language needs before it counts. */
 const MIN_RIVAL_HITS = 3;
 
+/**
+ * An all-caps word of two or more letters: an acronym such as `AI`, `IT` or
+ * `US`, not a function word. Lowercased, `AI` would read as French `ai`, so
+ * an English answer listing AI tools would score as French.
+ */
+function isAcronym(word: string): boolean {
+  return (
+    word.length >= 2 &&
+    word === word.toLocaleUpperCase() &&
+    word !== word.toLocaleLowerCase()
+  );
+}
+
 /** The distinctive stopwords of each language found in `text`. */
 export function languageHits(text: string): Record<OutputLanguage, number> {
   const hits = Object.fromEntries(
     Object.keys(STOPWORDS).map((language) => [language, 0]),
   ) as Record<OutputLanguage, number>;
-  for (const word of text.toLocaleLowerCase().match(/\p{L}+/gu) ?? []) {
-    const language = DISTINCTIVE.get(word);
+  for (const word of text.match(/\p{L}+/gu) ?? []) {
+    if (isAcronym(word)) continue;
+    const language = DISTINCTIVE.get(word.toLocaleLowerCase());
     if (language) hits[language] += 1;
   }
   return hits;
