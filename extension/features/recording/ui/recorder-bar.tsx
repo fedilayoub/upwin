@@ -305,6 +305,7 @@ export function RecorderBar({
         areaRect: null,
         tabStreamId: null,
         tabSize: null,
+        pageGeometry: null,
         cameraLayer: "composite",
       },
     }).catch(() => setNotice("video.error.UNKNOWN"));

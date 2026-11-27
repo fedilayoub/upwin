@@ -238,6 +238,7 @@ it("starts This tab from a tabCapture stream id and never trusts a page-sent one
         cameraDeviceId: "cam",
         cameraVisible: true,
         tabStreamId: "forged",
+        pageGeometry: { innerW: 1, outerW: 1, screenW: 1, zoom: 3 },
         cameraLayer: "page",
       },
     },
@@ -249,11 +250,17 @@ it("starts This tab from a tabCapture stream id and never trusts a page-sent one
       ([message]) =>
         message as {
           type?: string;
-          settings?: { tabStreamId: string; cameraLayer: string };
+          settings?: {
+            tabStreamId: string;
+            cameraLayer: string;
+            pageGeometry: unknown;
+          };
         },
     )
     .find((message) => message.type === "recording/start");
   expect(forwarded?.settings?.tabStreamId).toBe("fresh-stream");
+  // The page geometry comes from the host's viewport report only; none arrived here.
+  expect(forwarded?.settings?.pageGeometry).toBeNull();
   // No page host is connected in this test, so the compositor draws the camera.
   expect(forwarded?.settings?.cameraLayer).toBe("composite");
 });

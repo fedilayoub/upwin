@@ -316,6 +316,10 @@ export class RecordingEngine {
         this.state.live,
         (error) => void this.fail(error),
         settings.tabStreamId ? sources.tabCaptureSize(settings.tabSize) : null,
+        // Matching the page bubble only matters where it can be in the video.
+        ["no", "unknown"].includes(this.state.bubbleInCapture)
+          ? null
+          : settings.pageGeometry,
       );
       this.audio = this.deps.mixer(micTrack, displayAudio);
       this.uploader = this.makeUploader(

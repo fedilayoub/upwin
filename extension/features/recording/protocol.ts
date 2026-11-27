@@ -50,6 +50,25 @@ export const settingsSchema = z.object({
     })
     .nullable()
     .default(null),
+  /**
+   * The host page's geometry, set by the worker from the page host and the tab's zoom. The
+   * compositor draws its camera at the page bubble's own size with it, so the camera keeps its
+   * size when the compositor takes over from a page bubble that left the capture
+   * (see `framePxPerCss` in engine/layout.ts).
+   */
+  pageGeometry: z
+    .object({
+      /** `innerWidth`, in CSS pixels. */
+      innerW: z.number().positive().max(20_000),
+      /** `outerWidth` (the browser window), in DIPs. */
+      outerW: z.number().positive().max(20_000),
+      /** `screen.width`, in DIPs. */
+      screenW: z.number().positive().max(20_000),
+      /** The tab's zoom: CSS pixels to DIPs. */
+      zoom: z.number().min(0.25).max(5),
+    })
+    .nullable()
+    .default(null),
   cameraLayer: cameraLayerSchema.default("composite"),
 });
 export const liveSchema = z.object({
@@ -178,6 +197,7 @@ export const defaultSettings: RecordingSettings = {
   areaRect: null,
   tabStreamId: null,
   tabSize: null,
+  pageGeometry: null,
   cameraLayer: "composite",
 };
 const commands = [
@@ -438,6 +458,9 @@ export const viewportSchema = z.object({
   w: z.number().int().min(1).max(10_000),
   h: z.number().int().min(1).max(10_000),
   dpr: z.number().min(0.25).max(8),
+  /** `outerWidth` and `screen.width`, in DIPs: what a picked window or screen spans. */
+  outerW: z.number().int().min(1).max(20_000).optional(),
+  screenW: z.number().int().min(1).max(20_000).optional(),
 });
 export const hostToWorkerSchema = z.union([
   z.object({ type: z.literal("viewport"), viewport: viewportSchema }),
